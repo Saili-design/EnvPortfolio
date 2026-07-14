@@ -1048,7 +1048,7 @@ viewer.addEventListener('mouseleave', () => { glow.style.opacity = '0'; });
 
 // Auto-advance every 2s, paused while hovering the viewer
 let autoTimer = null;
-function startAuto() { stopAuto(); autoTimer = setInterval(() => goTo((current + 1) % imgData.length), 2000); }
+function startAuto() { stopAuto(); autoTimer = setInterval(() => goTo((current + 1) % imgData.length), 3500); }
 function stopAuto() { if (autoTimer) { clearInterval(autoTimer); autoTimer = null; } }
 startAuto();
 viewer.addEventListener('mouseenter', stopAuto);
