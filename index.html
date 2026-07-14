@@ -318,24 +318,21 @@
   .projects-scroll-wrapper::-webkit-scrollbar { display: none; }
   .projects-scroll-wrapper.dragging { cursor: grabbing; }
 
-  .projects-track {
-    display: flex;
-    gap: 24px;
-    width: max-content;
-    padding: 4px 2px 8px;
-    user-select: none;
+  .projects-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 26px;
+    padding: 4px 0 8px;
   }
 
   .pcard {
-    width: 360px;
-    flex-shrink: 0;
     position: relative;
     border: 1px solid rgba(0,212,255,0.15);
     background: var(--bg);
     overflow: hidden;
     transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
     clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
-    cursor: grab;
+    cursor: pointer;
   }
   .pcard:hover {
     border-color: var(--cyan);
@@ -669,10 +666,7 @@
     <div class="section-line"></div>
   </div>
 
-  <div class="projects-scroll-outer reveal">
-    <button class="proj-nav left" id="projPrev" aria-label="Scroll left">&#8249;</button>
-    <div class="projects-scroll-wrapper" id="projWrap">
-    <div class="projects-track" id="projectsTrack">
+  <div class="projects-gallery reveal" id="projectsTrack">
 
       <div class="pcard pcard-clickable" data-project="alys">
         <div class="pcard-img ph" data-file="projects/alys/thumb.png"></div>
@@ -761,11 +755,8 @@
         </div>
       </div>
 
-    </div>
-    </div>
-    <button class="proj-nav right" id="projNext" aria-label="Scroll right">&#8250;</button>
   </div>
-  <p class="projects-hint">&#8592; drag &middot; arrows &middot; click a project to open</p>
+  <p class="projects-hint">Click a project to open</p>
 </section>
 
 <!-- PROJECT MODAL -->
@@ -1055,45 +1046,7 @@ dotsEl.addEventListener('click', e => {
   if (dot) goTo(parseInt(dot.dataset.idx));
 });
 
-// PROJECTS DRAG SCROLL + ARROWS  (scrolls the WRAPPER, the real scroll container)
-const projWrap = document.getElementById('projWrap');
-const projTrack = document.getElementById('projectsTrack');
-const projPrev = document.getElementById('projPrev');
-const projNext = document.getElementById('projNext');
-let isDown = false, startX, scrollLeft, projDragged = false;
-
-projWrap.addEventListener('mousedown', e => {
-  isDown = true;
-  projDragged = false;
-  projWrap.classList.add('dragging');
-  startX = e.pageX - projWrap.offsetLeft;
-  scrollLeft = projWrap.scrollLeft;
-});
-projWrap.addEventListener('mouseleave', () => { isDown = false; projWrap.classList.remove('dragging'); });
-projWrap.addEventListener('mouseup', () => { isDown = false; projWrap.classList.remove('dragging'); });
-projWrap.addEventListener('mousemove', e => {
-  if (!isDown) return;
-  e.preventDefault();
-  const x = e.pageX - projWrap.offsetLeft;
-  const walk = (x - startX) * 1.4;
-  if (Math.abs(walk) > 6) projDragged = true;
-  projWrap.scrollLeft = scrollLeft - walk;
-});
-
-// Arrow buttons scroll by ~one card
-function projScrollBy(dir) { projWrap.scrollBy({ left: dir * 384, behavior: 'smooth' }); }
-projPrev.addEventListener('click', () => projScrollBy(-1));
-projNext.addEventListener('click', () => projScrollBy(1));
-
-// Fade the arrows out at each end
-function updateProjNav() {
-  const max = projWrap.scrollWidth - projWrap.clientWidth - 2;
-  projPrev.classList.toggle('hidden', projWrap.scrollLeft <= 2);
-  projNext.classList.toggle('hidden', projWrap.scrollLeft >= max);
-}
-projWrap.addEventListener('scroll', updateProjNav);
-window.addEventListener('resize', updateProjNav);
-updateProjNav();
+// PROJECTS gallery grid: all cards visible, no scroll logic needed.
 
 // PROJECT MODAL (slider + video + description)
 const projects = {
@@ -1322,7 +1275,7 @@ document.addEventListener('keydown', e => {
   else if (e.key === 'ArrowLeft') { e.preventDefault(); pmGo(pmCurrent - 1); }
 });
 document.querySelectorAll('.pcard-clickable').forEach(card => {
-  card.addEventListener('click', () => { if (!projDragged) openProject(card.dataset.project); });
+  card.addEventListener('click', () => openProject(card.dataset.project));
 });
 
 // SKILLS
