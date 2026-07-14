@@ -253,12 +253,26 @@
     backdrop-filter:blur(4px);
     clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%);
     text-shadow:0 0 8px rgba(0,212,255,0.55);
-    animation:hint-pulse 2.4s ease-in-out infinite;
   }
   @keyframes hint-pulse {
     0%,100% { opacity:1; }
     50% { opacity:0.5; }
   }
+  .img-arrow {
+    position:absolute; top:50%; transform:translateY(-50%);
+    z-index:8; width:44px; height:44px;
+    display:flex; align-items:center; justify-content:center;
+    background:rgba(5,8,16,0.6); border:1px solid rgba(0,212,255,0.5);
+    color:var(--cyan); font-size:1.5rem; cursor:pointer;
+    clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%);
+    backdrop-filter:blur(4px);
+    text-shadow:0 0 8px rgba(0,212,255,0.55);
+    transition:background 0.25s, color 0.25s, box-shadow 0.25s;
+    animation:hint-pulse 2s ease-in-out infinite;
+  }
+  .img-arrow.left { left:12px; }
+  .img-arrow.right { right:12px; }
+  .img-arrow:hover { background:var(--cyan); color:var(--bg); box-shadow:0 0 18px rgba(0,212,255,0.5); animation:none; opacity:1; }
 
   /* HUD label */
   .img-hud {
@@ -649,7 +663,9 @@
       <div class="img-corner bl"></div>
       <div class="img-corner br"></div>
       <div class="img-glow" id="imgGlow"></div>
-      <div class="img-hint">MOVE CURSOR TO BROWSE &#8594;</div>
+      <button class="img-arrow left" id="imgPrev" aria-label="Previous">&#8249;</button>
+      <button class="img-arrow right" id="imgNext" aria-label="Next">&#8250;</button>
+      <div class="img-hint">3D ENVIRONMENTS</div>
       <div class="img-hud" id="imgHud">INDUSTRIAL RESTROOM &nbsp;// &nbsp;STYLIZED 3D ENVIRONMENT</div>
       <div class="img-hud-right" id="imgHudRight">01 / 07</div>
     </div>
@@ -1021,26 +1037,26 @@ function goTo(idx) {
   }, 600);
 }
 
-// Mouse move ONLY inside the viewer advances the image
-let lastAdvance = 0;
-const ADVANCE_DELAY = 600;
-
+// Glow follows the cursor (visual only)
 viewer.addEventListener('mousemove', e => {
   const rect = viewer.getBoundingClientRect();
   glow.style.left = (e.clientX - rect.left) + 'px';
   glow.style.top = (e.clientY - rect.top) + 'px';
   glow.style.opacity = '1';
-
-  const now = Date.now();
-  if (now - lastAdvance > ADVANCE_DELAY) {
-    lastAdvance = now;
-    goTo((current + 1) % imgData.length);
-  }
 });
+viewer.addEventListener('mouseleave', () => { glow.style.opacity = '0'; });
 
-viewer.addEventListener('mouseleave', () => {
-  glow.style.opacity = '0';
-});
+// Auto-advance every 2s, paused while hovering the viewer
+let autoTimer = null;
+function startAuto() { stopAuto(); autoTimer = setInterval(() => goTo((current + 1) % imgData.length), 2000); }
+function stopAuto() { if (autoTimer) { clearInterval(autoTimer); autoTimer = null; } }
+startAuto();
+viewer.addEventListener('mouseenter', stopAuto);
+viewer.addEventListener('mouseleave', startAuto);
+
+// Prev / Next arrow buttons
+document.getElementById('imgPrev').addEventListener('click', () => goTo((current - 1 + imgData.length) % imgData.length));
+document.getElementById('imgNext').addEventListener('click', () => goTo((current + 1) % imgData.length));
 
 // Also allow dot clicks
 dotsEl.addEventListener('click', e => {
