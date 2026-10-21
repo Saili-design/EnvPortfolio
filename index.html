@@ -748,18 +748,18 @@
   // L'album env/. Extensions corrigees : l'ancien imgData pointait vers des
   // .jpg qui n'existent pas, cinq images sur sept etaient cassees.
   var SHOTS = [
-    {f:'env/Kardinal.jpg',   n:'Kardinal',        t:'Underwater environment'},
-    {f:'env/Macadam.jpg',    n:'Macadam',         t:'Cyberpunk club environment'},
-    {f:'env/Chaumiere.jpg',  n:'La Chaumière',    t:'Tropical environment'},
-    {f:'env/Caves.jpg',      n:'Les Caves',       t:'Metro environment'},
-    {f:'env/Bistro.jpg',     n:'Clown Bistro',    t:'Rainy circus environment'},
-    {f:'env/Industrial_Restroom.png', n:'Industrial Restroom', t:'Stylized 3D environment'},
-    {f:'env/ENV_000.png', n:'Night Cemetery',      t:'Stylized environment'},
-    {f:'env/ENV_001.png', n:'Bedroom',             t:'Interior scene'},
-    {f:'env/ENV_002.png', n:'Industrial Shaft',    t:'Sci-fi environment'},
-    {f:'env/ENV_003.jpg', n:'Underground Parking', t:'Urban environment'},
-    {f:'env/ENV_004.png', n:'Stage',               t:'Cinematic environment'},
-    {f:'env/ENV_005.png', n:'Warehouse',           t:'Atmospheric environment'}
+    {f:'env/Bistro.jpg',     n:'La Chaumière · Cirque', t:'Rainy circus environment'},
+    {f:'env/Chaumiere.jpg',  n:'La Chaumière · Plage',  t:'Tropical environment'},
+    {f:'env/Industrial_Restroom.png', n:'Le Ferrailleur', t:'Stylized 3D environment'},
+    {f:'env/Macadam.jpg',    n:'Macadam',          t:'Cyberpunk club environment'},
+    {f:'env/Kardinal.jpg',   n:'Kardinal',         t:'Underwater environment'},
+    {f:'env/Caves.jpg',      n:'Les Caves',        t:'Metro environment'},
+    {f:'env/ENV_000.png',    n:'Night Cemetery',      t:'Stylized environment'},
+    {f:'env/ENV_001.png',    n:'Bedroom',             t:'Interior scene'},
+    {f:'env/ENV_002.png',    n:'Industrial Shaft',    t:'Sci-fi environment'},
+    {f:'env/ENV_003.jpg',    n:'Underground Parking', t:'Urban environment'},
+    {f:'env/ENV_004.png',    n:'Stage',               t:'Cinematic environment'},
+    {f:'env/ENV_005.png',    n:'Warehouse',           t:'Atmospheric environment'}
   ];
 
   var frame=document.getElementById('shFrame'), track=document.getElementById('shTrack'),
@@ -1257,18 +1257,18 @@ drawHex();
 
 // IMAGE VIEWER
 const imgData = [
-  { src:"env/Kardinal.jpg", label:"KARDINAL", desc:"UNDERWATER ENVIRONMENT" },
+  { src:"env/Bistro.jpg", label:"LA CHAUMIÈRE · CIRQUE", desc:"RAINY CIRCUS ENVIRONMENT" },
+  { src:"env/Chaumiere.jpg", label:"LA CHAUMIÈRE · PLAGE", desc:"TROPICAL ENVIRONMENT" },
+  { src:"env/Industrial_Restroom.png", label:"LE FERRAILLEUR", desc:"STYLIZED 3D ENVIRONMENT" },
   { src:"env/Macadam.jpg", label:"MACADAM", desc:"CYBERPUNK CLUB ENVIRONMENT" },
-  { src:"env/Chaumiere.jpg", label:"LA CHAUMIÈRE", desc:"TROPICAL ENVIRONMENT" },
+  { src:"env/Kardinal.jpg", label:"KARDINAL", desc:"UNDERWATER ENVIRONMENT" },
   { src:"env/Caves.jpg", label:"LES CAVES", desc:"METRO ENVIRONMENT" },
-  { src:"env/Bistro.jpg", label:"CLOWN BISTRO", desc:"RAINY CIRCUS ENVIRONMENT" },
-  { src:"env/Industrial_Restroom.png", label:"INDUSTRIAL RESTROOM", desc:"STYLIZED 3D ENVIRONMENT" },
-  { src:"env/ENV_000.png", label:"ENV_000", desc:"STYLIZED · CEMETERY AT NIGHT" },
-  { src:"env/ENV_001.png", label:"ENV_001", desc:"INTERIOR · BEDROOM SCENE" },
-  { src:"env/ENV_002.png", label:"ENV_002", desc:"SCI-FI · INDUSTRIAL SHAFT" },
-  { src:"env/ENV_003.jpg", label:"ENV_003", desc:"URBAN · UNDERGROUND PARKING" },
-  { src:"env/ENV_004.png", label:"ENV_004", desc:"CINEMATIC · STAGE ENVIRONMENT" },
-  { src:"env/ENV_005.png", label:"ENV_005", desc:"ATMOSPHERIC · WAREHOUSE" },
+  { src:"env/ENV_000.png", label:"NIGHT CEMETERY", desc:"STYLIZED ENVIRONMENT" },
+  { src:"env/ENV_001.png", label:"BEDROOM", desc:"INTERIOR SCENE" },
+  { src:"env/ENV_002.png", label:"INDUSTRIAL SHAFT", desc:"SCI-FI ENVIRONMENT" },
+  { src:"env/ENV_003.jpg", label:"UNDERGROUND PARKING", desc:"URBAN ENVIRONMENT" },
+  { src:"env/ENV_004.png", label:"STAGE", desc:"CINEMATIC ENVIRONMENT" },
+  { src:"env/ENV_005.png", label:"WAREHOUSE", desc:"ATMOSPHERIC ENVIRONMENT" },
 ];
 
 // Resolve an image regardless of its extension: tries png/jpg/jpeg/webp and
