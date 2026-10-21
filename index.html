@@ -603,6 +603,230 @@
 </nav>
 
 <main>
+<!-- ====================== GALERIE D'ACCUEIL ====================== -->
+<style>
+#shelf{
+  position:relative;display:flex;flex-direction:column;justify-content:center;
+  min-height:min(100svh,780px);padding:76px 0 34px;overflow:hidden;background:#0a0c11;
+  --sw:min(84vw,980px);--gap:18px;
+}
+#shelf::after{
+  content:"";position:absolute;left:0;right:0;bottom:0;height:120px;pointer-events:none;
+  background:linear-gradient(to bottom,rgba(10,12,17,0),#0a0c11)
+}
+.sh-stage{position:relative;overflow:hidden;cursor:grab;touch-action:pan-y}
+.sh-stage.drag{cursor:grabbing}
+.sh-track{display:flex;align-items:center;gap:var(--gap);will-change:transform;
+  transition:transform .58s cubic-bezier(.22,.61,.24,1)}
+.sh-track.nt{transition:none}
+.sh-slide{
+  flex:0 0 auto;width:var(--sw);aspect-ratio:16/9;position:relative;overflow:hidden;
+  border-radius:14px;background:#13161f;border:1px solid #1e2330;
+  transform:scale(.855);opacity:.3;
+  transition:transform .58s cubic-bezier(.22,.61,.24,1),opacity .45s ease,box-shadow .45s ease;
+  will-change:transform,opacity
+}
+.sh-slide.on{transform:scale(1);opacity:1;box-shadow:0 26px 70px rgba(0,0,0,.65)}
+.sh-slide img{width:100%;height:100%;object-fit:cover;display:block;
+  -webkit-user-drag:none;user-select:none;pointer-events:none}
+.sh-slide .veil{position:absolute;inset:0;background:rgba(10,12,17,.42);
+  transition:opacity .45s;pointer-events:none}
+.sh-slide.on .veil{opacity:0}
+
+.sh-bar{
+  display:flex;align-items:flex-end;gap:18px;margin:22px auto 0;
+  width:var(--sw);max-width:94vw;padding:0 2px
+}
+.sh-meta{flex:1;min-width:0}
+.sh-name{font-size:clamp(17px,2.6vw,25px);font-weight:700;line-height:1.15;letter-spacing:-.01em;
+  color:#fff;transition:opacity .3s}
+.sh-tag{margin-top:5px;font-size:11px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;
+  color:#8591ff;transition:opacity .3s}
+.sh-fade{opacity:0}
+.sh-count{font-size:12.5px;font-weight:700;letter-spacing:.12em;color:#6b7285}
+.sh-nav{display:flex;gap:9px}
+.sh-nav button{
+  width:42px;height:42px;border-radius:50%;background:#161a24;border:1px solid #262c3b;
+  color:#cdd3e4;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:background .18s,border-color .18s,transform .12s
+}
+.sh-nav button:hover{background:#1f2533;border-color:#3a4260}
+.sh-nav button:active{transform:scale(.92)}
+.sh-dots{display:flex;gap:6px;justify-content:center;margin:20px auto 0;flex-wrap:wrap;max-width:88vw}
+.sh-dot{width:20px;height:3px;border-radius:2px;background:#262c3b;border:0;padding:0;cursor:pointer;
+  transition:background .3s,width .3s}
+.sh-dot.on{background:#4657f1;width:34px}
+.sh-hint{margin-top:26px;text-align:center;font-size:10.5px;font-weight:700;letter-spacing:.2em;
+  text-transform:uppercase;color:#4d5468}
+@media(max-width:700px){
+  #shelf{--sw:min(74vw,440px);--gap:14px;padding:70px 0 26px}
+  .sh-nav{display:none}
+  .sh-bar{flex-direction:column;align-items:flex-start;gap:10px}
+}
+@media(prefers-reduced-motion:reduce){
+  .sh-track,.sh-slide{transition:none}
+}
+</style>
+
+<section id="shelf" aria-label="Galerie 3D">
+  <div class="sh-stage" id="shStage">
+    <div class="sh-track" id="shTrack"></div>
+  </div>
+
+  <div class="sh-bar">
+    <div class="sh-meta">
+      <div class="sh-name" id="shName"></div>
+      <div class="sh-tag" id="shTag"></div>
+    </div>
+    <div class="sh-count" id="shCount"></div>
+    <div class="sh-nav">
+      <button type="button" id="shPrev" aria-label="Image précédente">‹</button>
+      <button type="button" id="shNext" aria-label="Image suivante">›</button>
+    </div>
+  </div>
+
+  <div class="sh-dots" id="shDots"></div>
+  <div class="sh-hint">Glisse &nbsp;·&nbsp; ou appuie sur une image</div>
+</section>
+
+<script>
+(function(){
+  var SHOTS = [
+    {f:'env/ENV_004.png',               n:'Forge',              t:'Environment study'},
+    {f:'projects/preux/01.png',         n:'Preux & Court',      t:'Adventure & action', p:'preux'},
+    {f:'projects/alys/01.png',          n:'Alys Redemption',    t:'Action-RPG & dark fantasy', p:'alys'},
+    {f:'projects/industrialtribe/01.png',n:'Industrial Tribe',  t:'3D environment', p:'industrialtribe'},
+    {f:'env/ENV_000.png',               n:'Shrine',             t:'Environment study'},
+    {f:'projects/eternal/01.jpg',       n:'Eternal',            t:'Sci-fi & apocalyptic', p:'eternal'},
+    {f:'env/Industrial_Restroom.png',   n:'Industrial Restroom',t:'Environment study'},
+    {f:'projects/ritual/02.png',        n:'Ritual',             t:'3D trailer & cinematic', p:'ritual'},
+    {f:'projects/preux/02.png',         n:'Preux & Court',      t:'Exploration', p:'preux'},
+    {f:'projects/beyble/01.png',        n:'The Legend of Beyble',t:'Game jam', p:'beyble'},
+    {f:'projects/dump/01.png',          n:'Dump',               t:'3D environment', p:'dump'},
+    {f:'env/ENV_003.jpg',               n:'Gate',               t:'Environment study'}
+  ];
+
+  var stage=document.getElementById('shStage'), track=document.getElementById('shTrack'),
+      elName=document.getElementById('shName'), elTag=document.getElementById('shTag'),
+      elCount=document.getElementById('shCount'), dotsEl=document.getElementById('shDots');
+  if(!stage) return;
+  var i=0, N=SHOTS.length, slides=[], dots=[];
+
+  SHOTS.forEach(function(s,k){
+    var d=document.createElement('div'); d.className='sh-slide';
+    var img=document.createElement('img');
+    img.src=s.f; img.alt=s.n;
+    // les trois premieres tout de suite, le reste a la demande
+    img.loading = k<3 ? 'eager' : 'lazy';
+    img.decoding='async';
+    d.appendChild(img);
+    var v=document.createElement('div'); v.className='veil'; d.appendChild(v);
+    d.addEventListener('click',function(){ if(moved) return; k===i ? open(k) : go(k); });
+    track.appendChild(d); slides.push(d);
+
+    var b=document.createElement('button');
+    b.type='button'; b.className='sh-dot'; b.setAttribute('aria-label','Image '+(k+1));
+    b.addEventListener('click',function(){ go(k); });
+    dotsEl.appendChild(b); dots.push(b);
+  });
+
+  function open(k){
+    var p=SHOTS[k].p;
+    var card=p && document.querySelector('.pcard[data-project="'+p+'"]');
+    if(card){ card.click(); return; }
+    var sec=document.getElementById('projects');
+    if(sec) sec.scrollIntoView({behavior:'smooth'});
+  }
+
+  // offsetWidth et non getBoundingClientRect : les diapos sont mises a l'echelle,
+  // et getBoundingClientRect renverrait la largeur APRES transformation.
+  function step(){ return slides[0].offsetWidth
+    + parseFloat(getComputedStyle(track).gap || 18); }
+
+  function place(off){
+    var x=(stage.clientWidth-slides[0].offsetWidth)/2 - i*step() + (off||0);
+    track.style.transform='translate3d('+x+'px,0,0)';
+  }
+
+  function paint(){
+    slides.forEach(function(s,k){ s.classList.toggle('on',k===i); });
+    dots.forEach(function(d,k){ d.classList.toggle('on',k===i); });
+    elName.classList.add('sh-fade'); elTag.classList.add('sh-fade');
+    setTimeout(function(){
+      elName.textContent=SHOTS[i].n; elTag.textContent=SHOTS[i].t;
+      elName.classList.remove('sh-fade'); elTag.classList.remove('sh-fade');
+    },160);
+    elCount.textContent=String(i+1).padStart(2,'0')+' / '+String(N).padStart(2,'0');
+    // on reveille les voisines pour que le glissement ne montre jamais de vide
+    [i-1,i+1,i+2].forEach(function(k){
+      if(k>=0&&k<N){ var im=slides[k].querySelector('img'); if(im) im.loading='eager'; }
+    });
+  }
+
+  function go(k){
+    i=Math.max(0,Math.min(N-1,k));
+    track.classList.remove('nt'); place(); paint();
+  }
+
+  document.getElementById('shPrev').addEventListener('click',function(){ go(i-1); });
+  document.getElementById('shNext').addEventListener('click',function(){ go(i+1); });
+  window.addEventListener('keydown',function(e){
+    if(e.key==='ArrowLeft') go(i-1);
+    else if(e.key==='ArrowRight') go(i+1);
+  });
+
+  // --- glissement doigt et souris, meme code ---
+  var down=false, x0=0, y0=0, dx=0, moved=false, lock='';
+  stage.addEventListener('pointerdown',function(e){
+    down=true; moved=false; lock=''; dx=0; x0=e.clientX; y0=e.clientY;
+    track.classList.add('nt'); stage.classList.add('drag');
+    // capture : le relachement nous revient meme si le doigt sort de la zone
+    try{ stage.setPointerCapture(e.pointerId); }catch(_){}
+  });
+  stage.addEventListener('pointermove',function(e){
+    if(!down) return;
+    var ax=e.clientX-x0, ay=e.clientY-y0;
+    if(!lock){
+      if(Math.abs(ax)>8||Math.abs(ay)>8) lock = Math.abs(ax)>Math.abs(ay) ? 'x' : 'y';
+      else return;
+    }
+    if(lock==='y') return;            // defilement vertical de la page : on laisse passer
+    if(e.cancelable) e.preventDefault();
+    dx=ax; moved=Math.abs(ax)>6;
+    // resistance aux extremites
+    if((i===0&&dx>0)||(i===N-1&&dx<0)) dx*=0.32;
+    place(dx);
+  });
+  function up(){
+    if(!down) return;
+    down=false; stage.classList.remove('drag'); track.classList.remove('nt');
+    var seuil=Math.min(90, step()*0.18);
+    if(dx<-seuil) i=Math.min(N-1,i+1);
+    else if(dx>seuil) i=Math.max(0,i-1);
+    dx=0; place(); paint();
+    setTimeout(function(){ moved=false; },60);
+  }
+  stage.addEventListener('pointerup',up);
+  stage.addEventListener('pointercancel',up);
+  // filets de securite : certains navigateurs n'emettent pas pointerup sur l'element
+  window.addEventListener('pointerup',up);
+  window.addEventListener('mouseup',up);
+  window.addEventListener('touchend',up);
+
+  window.addEventListener('resize',function(){
+    track.classList.add('nt'); place();
+    requestAnimationFrame(function(){ track.classList.remove('nt'); });
+  });
+
+  // premier calage une fois la premiere image mesuree
+  function init(){ place(); paint(); }
+  var first=slides[0].querySelector('img');
+  if(first.complete) init(); else first.addEventListener('load',init,{once:true});
+  setTimeout(init,400);
+})();
+</script>
+<!-- ==================== FIN GALERIE D'ACCUEIL ==================== -->
+
 <section id="hero">
   <div class="corner-bracket tl"></div>
   <div class="corner-bracket tr"></div>
