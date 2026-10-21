@@ -607,70 +607,99 @@
 <style>
 #shelf{
   position:relative;display:flex;flex-direction:column;justify-content:center;
-  min-height:min(100svh,780px);padding:76px 0 34px;overflow:hidden;background:#0a0c11;
-  --sw:min(84vw,980px);--gap:18px;
+  min-height:100svh;padding:18px 0 20px;gap:14px;overflow:hidden;background:#05070b;
 }
-#shelf::after{
-  content:"";position:absolute;left:0;right:0;bottom:0;height:120px;pointer-events:none;
-  background:linear-gradient(to bottom,rgba(10,12,17,0),#0a0c11)
+.sh-head{text-align:center;padding:0 18px}
+.sh-who{font-size:clamp(17px,4.6vw,24px);font-weight:800;letter-spacing:.04em;color:#fff}
+.sh-role{margin-top:4px;font-size:10.5px;font-weight:700;letter-spacing:.22em;
+  text-transform:uppercase;color:#00d4ff}
+
+/* ---- visionneuse ---- */
+.sh-frame{
+  position:relative;width:min(93vw,1020px);aspect-ratio:16/10;max-height:46svh;
+  margin:0 auto;overflow:hidden;background:#0b0f16;cursor:grab;touch-action:pan-y;
+  clip-path:polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px));
+  border:1px solid rgba(0,212,255,.22);
+  box-shadow:0 0 44px rgba(0,212,255,.07), inset 0 0 70px rgba(0,0,0,.45)
 }
-.sh-stage{position:relative;overflow:hidden;cursor:grab;touch-action:pan-y}
-.sh-stage.drag{cursor:grabbing}
-.sh-track{display:flex;align-items:center;gap:var(--gap);will-change:transform;
-  transition:transform .58s cubic-bezier(.22,.61,.24,1)}
+.sh-frame.drag{cursor:grabbing}
+.sh-track{display:flex;height:100%;will-change:transform;
+  transition:transform .5s cubic-bezier(.22,.61,.24,1)}
 .sh-track.nt{transition:none}
-.sh-slide{
-  flex:0 0 auto;width:var(--sw);aspect-ratio:16/9;position:relative;overflow:hidden;
-  border-radius:14px;background:#13161f;border:1px solid #1e2330;
-  transform:scale(.855);opacity:.3;
-  transition:transform .58s cubic-bezier(.22,.61,.24,1),opacity .45s ease,box-shadow .45s ease;
-  will-change:transform,opacity
-}
-.sh-slide.on{transform:scale(1);opacity:1;box-shadow:0 26px 70px rgba(0,0,0,.65)}
+.sh-slide{flex:0 0 100%;height:100%;position:relative}
 .sh-slide img{width:100%;height:100%;object-fit:cover;display:block;
   -webkit-user-drag:none;user-select:none;pointer-events:none}
-.sh-slide .veil{position:absolute;inset:0;background:rgba(10,12,17,.42);
-  transition:opacity .45s;pointer-events:none}
-.sh-slide.on .veil{opacity:0}
+.sh-arrow{
+  position:absolute;top:50%;transform:translateY(-50%);z-index:3;
+  width:40px;height:40px;border:1px solid rgba(0,212,255,.3);background:rgba(5,8,13,.6);
+  color:#cfefff;font-size:17px;cursor:pointer;display:flex;align-items:center;
+  justify-content:center;transition:background .18s,transform .12s
+}
+.sh-arrow:hover{background:rgba(0,212,255,.18)}
+.sh-arrow:active{transform:translateY(-50%) scale(.9)}
+#shPrev{left:12px}#shNext{right:12px}
 
-.sh-bar{
-  display:flex;align-items:flex-end;gap:18px;margin:22px auto 0;
-  width:var(--sw);max-width:94vw;padding:0 2px
-}
+/* ---- legende ---- */
+.sh-bar{display:flex;align-items:baseline;gap:12px;width:min(93vw,1020px);margin:0 auto;padding:0 2px}
 .sh-meta{flex:1;min-width:0}
-.sh-name{font-size:clamp(17px,2.6vw,25px);font-weight:700;line-height:1.15;letter-spacing:-.01em;
-  color:#fff;transition:opacity .3s}
-.sh-tag{margin-top:5px;font-size:11px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;
-  color:#8591ff;transition:opacity .3s}
+.sh-name{font-size:clamp(14px,3.6vw,19px);font-weight:700;letter-spacing:.03em;color:#fff;
+  transition:opacity .25s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sh-tag{margin-top:3px;font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;
+  color:#7f8aa3;transition:opacity .25s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sh-fade{opacity:0}
-.sh-count{font-size:12.5px;font-weight:700;letter-spacing:.12em;color:#6b7285}
-.sh-nav{display:flex;gap:9px}
-.sh-nav button{
-  width:42px;height:42px;border-radius:50%;background:#161a24;border:1px solid #262c3b;
-  color:#cdd3e4;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;
-  transition:background .18s,border-color .18s,transform .12s
+.sh-count{font-size:11.5px;font-weight:700;letter-spacing:.12em;color:#00d4ff;flex:0 0 auto}
+
+/* ---- bande de previsualisation ---- */
+.sh-strip{
+  display:flex;gap:8px;width:min(93vw,1020px);margin:0 auto;padding:2px 2px 4px;
+  overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch
 }
-.sh-nav button:hover{background:#1f2533;border-color:#3a4260}
-.sh-nav button:active{transform:scale(.92)}
-.sh-dots{display:flex;gap:6px;justify-content:center;margin:20px auto 0;flex-wrap:wrap;max-width:88vw}
-.sh-dot{width:20px;height:3px;border-radius:2px;background:#262c3b;border:0;padding:0;cursor:pointer;
-  transition:background .3s,width .3s}
-.sh-dot.on{background:#4657f1;width:34px}
-.sh-hint{margin-top:26px;text-align:center;font-size:10.5px;font-weight:700;letter-spacing:.2em;
-  text-transform:uppercase;color:#4d5468}
-@media(max-width:700px){
-  #shelf{--sw:min(74vw,440px);--gap:14px;padding:70px 0 26px}
-  .sh-nav{display:none}
-  .sh-bar{flex-direction:column;align-items:flex-start;gap:10px}
+.sh-strip::-webkit-scrollbar{display:none}
+.sh-th{
+  flex:0 0 auto;width:100px;aspect-ratio:16/10;padding:0;border:1px solid #223040;
+  background:#0b0f16;overflow:hidden;cursor:pointer;opacity:.62;
+  transition:opacity .25s,border-color .25s,transform .18s
 }
-@media(prefers-reduced-motion:reduce){
-  .sh-track,.sh-slide{transition:none}
+.sh-th img{width:100%;height:100%;object-fit:cover;display:block}
+.sh-th:hover{opacity:.9}
+.sh-th.on{opacity:1;border-color:#00d4ff;transform:translateY(-2px);
+  box-shadow:0 0 14px rgba(0,212,255,.3)}
+
+/* ---- boutons de navigation ---- */
+.sh-links{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;
+  width:min(93vw,1020px);margin:2px auto 0;padding:0 2px}
+.sh-links a{
+  flex:1 1 auto;min-width:0;text-align:center;padding:11px 10px;text-decoration:none;
+  font-size:11.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:#cfe9f5;background:#0d1219;border:1px solid #1d2838;
+  clip-path:polygon(0 0, calc(100% - 9px) 0, 100% 9px, 100% 100%, 9px 100%, 0 calc(100% - 9px));
+  transition:background .18s,border-color .18s,color .18s,transform .12s
 }
+.sh-links a:hover{background:#121a24;border-color:rgba(0,212,255,.45);color:#fff}
+.sh-links a:active{transform:scale(.96)}
+.sh-links a.hot{background:rgba(0,212,255,.12);border-color:rgba(0,212,255,.5);color:#8ce7ff}
+
+@media(max-width:760px){
+  nav{display:none}                 /* la barre du haut genait : les boutons sont ici */
+  #shelf{padding:14px 0 16px;gap:11px}
+  .sh-frame{max-height:40svh}
+  .sh-arrow{display:none}
+  .sh-th{width:84px}
+  .sh-links a{flex:1 1 42%;letter-spacing:.1em;font-size:11px;padding:10px 8px}
+}
+@media(prefers-reduced-motion:reduce){ .sh-track{transition:none} }
 </style>
 
-<section id="shelf" aria-label="Galerie 3D">
-  <div class="sh-stage" id="shStage">
+<section id="shelf" aria-label="Album 3D">
+  <div class="sh-head">
+    <div class="sh-who">ILIAS EL FORKANI</div>
+    <div class="sh-role">3D Environment Artist</div>
+  </div>
+
+  <div class="sh-frame" id="shFrame">
     <div class="sh-track" id="shTrack"></div>
+    <button type="button" class="sh-arrow" id="shPrev" aria-label="Precedente">&lsaquo;</button>
+    <button type="button" class="sh-arrow" id="shNext" aria-label="Suivante">&rsaquo;</button>
   </div>
 
   <div class="sh-bar">
@@ -679,136 +708,109 @@
       <div class="sh-tag" id="shTag"></div>
     </div>
     <div class="sh-count" id="shCount"></div>
-    <div class="sh-nav">
-      <button type="button" id="shPrev" aria-label="Image précédente">‹</button>
-      <button type="button" id="shNext" aria-label="Image suivante">›</button>
-    </div>
   </div>
 
-  <div class="sh-dots" id="shDots"></div>
-  <div class="sh-hint">Glisse &nbsp;·&nbsp; ou appuie sur une image</div>
+  <div class="sh-strip" id="shStrip"></div>
+
+  <div class="sh-links">
+    <a href="#projects" class="hot">Projects</a>
+    <a href="#software">Software</a>
+    <a href="#skills">Skills</a>
+    <a href="#contact">Contact</a>
+  </div>
 </section>
 
 <script>
 (function(){
+  // L'album env/. Extensions corrigees : l'ancien imgData pointait vers des
+  // .jpg qui n'existent pas, cinq images sur sept etaient cassees.
   var SHOTS = [
-    {f:'env/ENV_004.png',               n:'Forge',              t:'Environment study'},
-    {f:'projects/preux/01.png',         n:'Preux & Court',      t:'Adventure & action', p:'preux'},
-    {f:'projects/alys/01.png',          n:'Alys Redemption',    t:'Action-RPG & dark fantasy', p:'alys'},
-    {f:'projects/industrialtribe/01.png',n:'Industrial Tribe',  t:'3D environment', p:'industrialtribe'},
-    {f:'env/ENV_000.png',               n:'Shrine',             t:'Environment study'},
-    {f:'projects/eternal/01.jpg',       n:'Eternal',            t:'Sci-fi & apocalyptic', p:'eternal'},
-    {f:'env/Industrial_Restroom.png',   n:'Industrial Restroom',t:'Environment study'},
-    {f:'projects/ritual/02.png',        n:'Ritual',             t:'3D trailer & cinematic', p:'ritual'},
-    {f:'projects/preux/02.png',         n:'Preux & Court',      t:'Exploration', p:'preux'},
-    {f:'projects/beyble/01.png',        n:'The Legend of Beyble',t:'Game jam', p:'beyble'},
-    {f:'projects/dump/01.png',          n:'Dump',               t:'3D environment', p:'dump'},
-    {f:'env/ENV_003.jpg',               n:'Gate',               t:'Environment study'}
+    {f:'env/Industrial_Restroom.png', n:'Industrial Restroom', t:'Stylized 3D environment'},
+    {f:'env/ENV_000.png', n:'ENV_000', t:'Stylized · cemetery at night'},
+    {f:'env/ENV_001.png', n:'ENV_001', t:'Interior · bedroom scene'},
+    {f:'env/ENV_002.png', n:'ENV_002', t:'Sci-fi · industrial shaft'},
+    {f:'env/ENV_003.jpg', n:'ENV_003', t:'Urban · underground parking'},
+    {f:'env/ENV_004.png', n:'ENV_004', t:'Cinematic · stage environment'},
+    {f:'env/ENV_005.png', n:'ENV_005', t:'Atmospheric · warehouse'}
   ];
 
-  var stage=document.getElementById('shStage'), track=document.getElementById('shTrack'),
-      elName=document.getElementById('shName'), elTag=document.getElementById('shTag'),
-      elCount=document.getElementById('shCount'), dotsEl=document.getElementById('shDots');
-  if(!stage) return;
-  var i=0, N=SHOTS.length, slides=[], dots=[];
+  var frame=document.getElementById('shFrame'), track=document.getElementById('shTrack'),
+      strip=document.getElementById('shStrip'), elName=document.getElementById('shName'),
+      elTag=document.getElementById('shTag'), elCount=document.getElementById('shCount');
+  if(!frame) return;
+  var i=0, N=SHOTS.length, slides=[], thumbs=[];
 
   SHOTS.forEach(function(s,k){
     var d=document.createElement('div'); d.className='sh-slide';
-    var img=document.createElement('img');
-    img.src=s.f; img.alt=s.n;
-    // les trois premieres tout de suite, le reste a la demande
-    img.loading = k<3 ? 'eager' : 'lazy';
-    img.decoding='async';
-    d.appendChild(img);
-    var v=document.createElement('div'); v.className='veil'; d.appendChild(v);
-    d.addEventListener('click',function(){ if(moved) return; k===i ? open(k) : go(k); });
-    track.appendChild(d); slides.push(d);
+    var img=new Image(); img.src=s.f; img.alt=s.n;
+    img.loading = k<2 ? 'eager' : 'lazy'; img.decoding='async';
+    d.appendChild(img); track.appendChild(d); slides.push(d);
 
     var b=document.createElement('button');
-    b.type='button'; b.className='sh-dot'; b.setAttribute('aria-label','Image '+(k+1));
+    b.type='button'; b.className='sh-th'; b.setAttribute('aria-label',s.n);
+    var ti=new Image(); ti.src=s.f; ti.alt=''; ti.loading='lazy'; ti.decoding='async';
+    b.appendChild(ti);
     b.addEventListener('click',function(){ go(k); });
-    dotsEl.appendChild(b); dots.push(b);
+    strip.appendChild(b); thumbs.push(b);
   });
 
-  function open(k){
-    var p=SHOTS[k].p;
-    var card=p && document.querySelector('.pcard[data-project="'+p+'"]');
-    if(card){ card.click(); return; }
-    var sec=document.getElementById('projects');
-    if(sec) sec.scrollIntoView({behavior:'smooth'});
-  }
-
-  // offsetWidth et non getBoundingClientRect : les diapos sont mises a l'echelle,
-  // et getBoundingClientRect renverrait la largeur APRES transformation.
-  function step(){ return slides[0].offsetWidth
-    + parseFloat(getComputedStyle(track).gap || 18); }
-
   function place(off){
-    var x=(stage.clientWidth-slides[0].offsetWidth)/2 - i*step() + (off||0);
-    track.style.transform='translate3d('+x+'px,0,0)';
+    track.style.transform='translate3d('+(-i*frame.clientWidth+(off||0))+'px,0,0)';
   }
 
   function paint(){
-    slides.forEach(function(s,k){ s.classList.toggle('on',k===i); });
-    dots.forEach(function(d,k){ d.classList.toggle('on',k===i); });
+    thumbs.forEach(function(t,k){ t.classList.toggle('on',k===i); });
     elName.classList.add('sh-fade'); elTag.classList.add('sh-fade');
     setTimeout(function(){
       elName.textContent=SHOTS[i].n; elTag.textContent=SHOTS[i].t;
       elName.classList.remove('sh-fade'); elTag.classList.remove('sh-fade');
-    },160);
+    },140);
     elCount.textContent=String(i+1).padStart(2,'0')+' / '+String(N).padStart(2,'0');
-    // on reveille les voisines pour que le glissement ne montre jamais de vide
-    [i-1,i+1,i+2].forEach(function(k){
+    [i-1,i+1].forEach(function(k){
       if(k>=0&&k<N){ var im=slides[k].querySelector('img'); if(im) im.loading='eager'; }
     });
+    if(thumbs[i].scrollIntoView)
+      thumbs[i].scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});
   }
 
   function go(k){
     i=Math.max(0,Math.min(N-1,k));
     track.classList.remove('nt'); place(); paint();
   }
-
   document.getElementById('shPrev').addEventListener('click',function(){ go(i-1); });
   document.getElementById('shNext').addEventListener('click',function(){ go(i+1); });
   window.addEventListener('keydown',function(e){
-    if(e.key==='ArrowLeft') go(i-1);
-    else if(e.key==='ArrowRight') go(i+1);
+    if(e.key==='ArrowLeft') go(i-1); else if(e.key==='ArrowRight') go(i+1);
   });
 
-  // --- glissement doigt et souris, meme code ---
-  var down=false, x0=0, y0=0, dx=0, moved=false, lock='';
-  stage.addEventListener('pointerdown',function(e){
-    down=true; moved=false; lock=''; dx=0; x0=e.clientX; y0=e.clientY;
-    track.classList.add('nt'); stage.classList.add('drag');
-    // capture : le relachement nous revient meme si le doigt sort de la zone
-    try{ stage.setPointerCapture(e.pointerId); }catch(_){}
+  // --- glissement doigt et souris ---
+  var down=false,x0=0,y0=0,dx=0,lock='';
+  frame.addEventListener('pointerdown',function(e){
+    down=true; lock=''; dx=0; x0=e.clientX; y0=e.clientY;
+    track.classList.add('nt'); frame.classList.add('drag');
+    try{ frame.setPointerCapture(e.pointerId); }catch(_){}
   });
-  stage.addEventListener('pointermove',function(e){
+  frame.addEventListener('pointermove',function(e){
     if(!down) return;
     var ax=e.clientX-x0, ay=e.clientY-y0;
     if(!lock){
-      if(Math.abs(ax)>8||Math.abs(ay)>8) lock = Math.abs(ax)>Math.abs(ay) ? 'x' : 'y';
-      else return;
+      if(Math.abs(ax)>8||Math.abs(ay)>8) lock=Math.abs(ax)>Math.abs(ay)?'x':'y'; else return;
     }
-    if(lock==='y') return;            // defilement vertical de la page : on laisse passer
+    if(lock==='y') return;
     if(e.cancelable) e.preventDefault();
-    dx=ax; moved=Math.abs(ax)>6;
-    // resistance aux extremites
-    if((i===0&&dx>0)||(i===N-1&&dx<0)) dx*=0.32;
+    dx=ax;
+    if((i===0&&dx>0)||(i===N-1&&dx<0)) dx*=0.32;   // resistance aux extremites
     place(dx);
   });
   function up(){
     if(!down) return;
-    down=false; stage.classList.remove('drag'); track.classList.remove('nt');
-    var seuil=Math.min(90, step()*0.18);
-    if(dx<-seuil) i=Math.min(N-1,i+1);
-    else if(dx>seuil) i=Math.max(0,i-1);
+    down=false; frame.classList.remove('drag'); track.classList.remove('nt');
+    var seuil=Math.min(80, frame.clientWidth*0.16);
+    if(dx<-seuil) i=Math.min(N-1,i+1); else if(dx>seuil) i=Math.max(0,i-1);
     dx=0; place(); paint();
-    setTimeout(function(){ moved=false; },60);
   }
-  stage.addEventListener('pointerup',up);
-  stage.addEventListener('pointercancel',up);
-  // filets de securite : certains navigateurs n'emettent pas pointerup sur l'element
+  frame.addEventListener('pointerup',up);
+  frame.addEventListener('pointercancel',up);
   window.addEventListener('pointerup',up);
   window.addEventListener('mouseup',up);
   window.addEventListener('touchend',up);
@@ -818,14 +820,11 @@
     requestAnimationFrame(function(){ track.classList.remove('nt'); });
   });
 
-  // premier calage une fois la premiere image mesuree
-  function init(){ place(); paint(); }
-  var first=slides[0].querySelector('img');
-  if(first.complete) init(); else first.addEventListener('load',init,{once:true});
-  setTimeout(init,400);
+  place(); paint();
 })();
 </script>
 <!-- ==================== FIN GALERIE D'ACCUEIL ==================== -->
+
 
 <section id="hero">
   <div class="corner-bracket tl"></div>
@@ -1159,12 +1158,12 @@ drawHex();
 // IMAGE VIEWER
 const imgData = [
   { src:"env/Industrial_Restroom.png", label:"INDUSTRIAL RESTROOM", desc:"STYLIZED 3D ENVIRONMENT" },
-  { src:"env/ENV_000.jpg", label:"ENV_000", desc:"STYLIZED · CEMETERY AT NIGHT" },
-  { src:"env/ENV_001.jpg", label:"ENV_001", desc:"INTERIOR · BEDROOM SCENE" },
-  { src:"env/ENV_002.jpg", label:"ENV_002", desc:"SCI-FI · INDUSTRIAL SHAFT" },
+  { src:"env/ENV_000.png", label:"ENV_000", desc:"STYLIZED · CEMETERY AT NIGHT" },
+  { src:"env/ENV_001.png", label:"ENV_001", desc:"INTERIOR · BEDROOM SCENE" },
+  { src:"env/ENV_002.png", label:"ENV_002", desc:"SCI-FI · INDUSTRIAL SHAFT" },
   { src:"env/ENV_003.jpg", label:"ENV_003", desc:"URBAN · UNDERGROUND PARKING" },
-  { src:"env/ENV_004.jpg", label:"ENV_004", desc:"CINEMATIC · STAGE ENVIRONMENT" },
-  { src:"env/ENV_005.jpg", label:"ENV_005", desc:"ATMOSPHERIC · WAREHOUSE" },
+  { src:"env/ENV_004.png", label:"ENV_004", desc:"CINEMATIC · STAGE ENVIRONMENT" },
+  { src:"env/ENV_005.png", label:"ENV_005", desc:"ATMOSPHERIC · WAREHOUSE" },
 ];
 
 // Resolve an image regardless of its extension: tries png/jpg/jpeg/webp and
