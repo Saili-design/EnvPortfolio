@@ -1202,6 +1202,8 @@
       <a href="https://fr.fiverr.com/elforkani?public_mode=true" target="_blank" class="contact-link">&#8599; FIVERR</a>
       <a href="https://www.linkedin.com/in/ilias-elforkani/?skipRedirect=true" target="_blank" class="contact-link">in LINKEDIN</a>
       <a href="#" class="contact-link">&#11203; PORTFOLIO</a>
+      <button type="button" class="contact-link" id="dcCopy"
+              data-tag="saili.design">&#9679; DISCORD &mdash; saili.design</button>
     </div>
     <a href="mailto:ilias.forkani@gmail.com" class="btn-primary" style="margin:0 auto;display:inline-flex;">START A PROJECT &#8594;</a>
   </div>
@@ -1651,6 +1653,26 @@ const obs = new IntersectionObserver(entries => {
   });
 }, { threshold:.08 });
 document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+</script>
+<script>
+(function(){
+  // Discord n'expose pas d'URL publique par pseudo : on copie le pseudo au clic.
+  var b=document.getElementById('dcCopy'); if(!b) return;
+  var base=b.innerHTML;
+  b.style.cursor='pointer'; b.style.font='inherit';
+  b.addEventListener('click',function(){
+    var t=b.dataset.tag;
+    var fini=function(){ b.innerHTML='&#10003; COPIÉ &mdash; '+t;
+      setTimeout(function(){ b.innerHTML=base; },1600); };
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(t).then(fini,fini);
+    } else {
+      var i=document.createElement('input'); i.value=t; document.body.appendChild(i);
+      i.select(); try{ document.execCommand('copy'); }catch(_){}
+      document.body.removeChild(i); fini();
+    }
+  });
+})();
 </script>
 </body>
 </html>
