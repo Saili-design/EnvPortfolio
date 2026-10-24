@@ -805,8 +805,10 @@
     i=Math.max(0,Math.min(N-1,k));
     track.classList.remove('nt'); place(); paint();
   }
-  document.getElementById('shPrev').addEventListener('click',function(){ go(i-1); });
-  document.getElementById('shNext').addEventListener('click',function(){ go(i+1); });
+  document.getElementById('shPrev').addEventListener('click',function(e){
+    e.stopPropagation(); go(i-1); });
+  document.getElementById('shNext').addEventListener('click',function(e){
+    e.stopPropagation(); go(i+1); });
   window.addEventListener('keydown',function(e){
     if(e.key==='ArrowLeft') go(i-1); else if(e.key==='ArrowRight') go(i+1);
   });
@@ -814,6 +816,7 @@
   // --- glissement doigt et souris ---
   var down=false,x0=0,y0=0,dx=0,lock='',moved=false;
   frame.addEventListener('pointerdown',function(e){
+    if(e.target.closest('.sh-arrow')) return;   // le bouton garde son propre clic
     down=true; lock=''; dx=0; moved=false; x0=e.clientX; y0=e.clientY;
     track.classList.add('nt'); frame.classList.add('drag');
     try{ frame.setPointerCapture(e.pointerId); }catch(_){}
