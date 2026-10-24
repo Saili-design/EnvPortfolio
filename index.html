@@ -1293,9 +1293,25 @@ function resolveImage(basePath, onFound) {
 }
 const stripExt = p => p.replace(/\.[a-z0-9]+$/i, '');
 
+// Le HTML ne declare que 7 slides : on cree les manquants quand l'album grandit.
+// Sans ca, getElementById renvoie null, le script casse, et tout ce qui suit
+// (dont la revelation au defilement) ne s'execute jamais.
+(function(){
+  for (let i = 0; i < imgData.length; i++) {
+    if (document.getElementById('slide'+i)) continue;
+    const prec = document.getElementById('slide'+(i-1));
+    if (!prec) break;
+    const d = document.createElement('div');
+    d.className = 'img-slide';
+    d.id = 'slide'+i;
+    prec.parentNode.insertBefore(d, prec.nextSibling);
+  }
+})();
+
 // Inject hero bg images (named placeholder until the file is uploaded)
 imgData.forEach((d,i) => {
   const s = document.getElementById('slide'+i);
+  if (!s) return;                      // garde-fou : ne jamais casser la page
   s.classList.add('ph');
   s.setAttribute('data-file', d.src);
   resolveImage(stripExt(d.src), url => { s.style.backgroundImage = `url('${url}')`; s.classList.remove('ph'); });
@@ -1656,6 +1672,17 @@ const obs = new IntersectionObserver(entries => {
   });
 }, { threshold:.08 });
 document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+// Filet de securite : si l'observateur n'existe pas ou n'a rien revele au bout
+// de 3 s, on affiche tout. Une animation ratee vaut mieux qu'une page vide.
+(function(){
+  const tout = () => document.querySelectorAll('.reveal')
+    .forEach(el => el.classList.add('visible'));
+  if (!('IntersectionObserver' in window)) { tout(); return; }
+  setTimeout(() => {
+    if (!document.querySelector('.reveal.visible')) tout();
+  }, 3000);
+})();
 </script>
 <script>
 (function(){
